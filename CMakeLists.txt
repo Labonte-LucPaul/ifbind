@@ -1,0 +1,41 @@
+#  ifbind - Bind two interfaces as a bridge to simulate loopback connection.
+#
+#  Copyright (C) 2020  Luc Paul Labonté
+#
+#  This program is free software: you can redistribute it and/or modify
+#  it under the terms of the GNU Affero General Public License as published
+#  by the Free Software Foundation, either version 3 of the License, or
+#  (at your option) any later version.
+#
+#  This program is distributed in the hope that it will be useful,
+#  but WITHOUT ANY WARRANTY; without even the implied warranty of
+#  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+#  GNU Affero General Public License for more details.
+#
+#  You should have received a copy of the GNU Affero General Public License
+#  along with this program.  If not, see <https:#www.gnu.org/licenses/>.
+#
+#  Contact: labonte.lucpaul+ifbind(at)gmail(dot)com
+#  project: https:#github.com/Labonte-LucPaul/ifbind
+
+cmake_minimum_required(VERSION 3.15)
+project(ifbind CXX)
+
+
+set(CMAKE_CXX_STANDARD 20)
+#set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xclang -fconcepts-ts")
+
+set(THREADS_PREFER_PTHREAD_FLAG ON)
+find_package(spdlog REQUIRED)
+find_package(Threads REQUIRED)
+find_package(libtins REQUIRED)
+
+set(PROJ_LIB
+        spdlog::spdlog
+        tins
+        Threads::Threads
+        stdc++fs
+)
+
+add_executable(ifbind main.cpp binder.cpp binder.h binders.cpp cxxopts.hpp)
+target_link_libraries(ifbind PUBLIC ${PROJ_LIB})
