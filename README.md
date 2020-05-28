@@ -3,6 +3,12 @@ Bind two network interfaces to simulate al loop back.
 
 This program was created as an alternative to bind two L2TP network inerfaces. Using `brctl` didn't work.
 
+## Build
+```bash
+sudo make apt-deps
+make build
+sudo make install
+```
 ## Usage
 
 ### Help
