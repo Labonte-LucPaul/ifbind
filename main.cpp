@@ -137,9 +137,11 @@ int main(int argc, char *argv[]) {
     std::shared_ptr<spdlog::logger> logger = nullptr;
     auto sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
     if (interactive) {
-        const auto path = std::experimental::filesystem::current_path();
+        auto path = std::experimental::filesystem::current_path();
+        path /= "ifbind.log";
         logger = spdlog::basic_logger_mt("ifbinder", path, true);
         spdlog::flush_every(1s);
+        std::cout << "logfile: " << path << std::endl;
     } else {
         logger = std::make_shared<spdlog::logger>("ifbinder", sink);
         spdlog::register_logger(logger);
