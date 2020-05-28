@@ -18,11 +18,11 @@
 #  Contact: labonte.lucpaul+ifbind(at)gmail(dot)com
 #  project: https:#github.com/Labonte-LucPaul/ifbind
 
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.10.2)
 project(ifbind CXX)
 
 
-set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD 17)
 #set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Xclang -fconcepts-ts")
 
 set(THREADS_PREFER_PTHREAD_FLAG ON)
