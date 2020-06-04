@@ -1,7 +1,7 @@
 # ifbind
-Bind two network interfaces to simulate al loop back.
+Bind two network interfaces to simulate a loop back.
 
-This program was created as an alternative to bind two L2TP network inerfaces. Using `brctl` didn't work.
+This program was created as an alternative to bind two L2TP network interfaces. Using `brctl` didn't work.
 
 ## Build
 ```bash
@@ -20,7 +20,7 @@ sudo ./ifbind --bridge tunnel1:tunnel2 --bridge tunnel3:tunnel4
 ```
 
 ### Debug
-To activate the debug level and view each packets being forwarded:
+To activate the debug level and view each time a packets is being forwarded:
 use the `--debug` (or `-D`) argument.
 
 ```bash
