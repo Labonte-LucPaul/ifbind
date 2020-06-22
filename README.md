@@ -31,6 +31,6 @@ sudo ./ifbind --debug --bridge tunnel1:tunnel2
 To use the interactive mode use the argument `--interactive` (or `-I`).
 
 The interactive mode allow you to connect/disconnect binded interfaces by providing a CLI.  
-Nothe that the logs are outputed in the fine `ifbind.log` located in `pwd`.
+Note that the logs are outputed in the fine `ifbind.log` located in `pwd`.
 
 To view a list of commands, in the CLI type `help`.
