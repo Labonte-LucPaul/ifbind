@@ -54,6 +54,7 @@ void Binder::start() {
 }
 
 void Binder::stop() {
+    if(!run) return;
     logger->info("Stopping bind {} <=> {}", iface1_, iface2_);
     run = false;
     for (auto &sn : sniffers)
@@ -88,4 +89,5 @@ void Binder::snifferThread(const std::string &listenerIface, const std::string &
         }
     });
     sniffer->stop_sniff();
+    logger->info("Stopping bind {} -> {}", listenerIface, senderIface);
 }

@@ -46,12 +46,14 @@ constexpr auto VERSION = "1.0.0";
 using Interfaces = std::vector<std::pair<std::string, std::string>>;
 
 Binders binders;
+static bool main_run = false;
 
 void SignalHandler(const int signal) {
     auto logger = spdlog::get(LOG_NAME);
     logger->info("Caught signal ({}).", signal);
     binders.stop();
     logger->flush();
+    main_run = false;
     exit(signal);
 }
 
@@ -219,8 +221,9 @@ int main(int argc, char *argv[]) {
         } while (input != "exit");
         binders.stop();
     } else {
+        main_run = true;
         binders.start();
-        while (true);
+        while (main_run);
     }
     return 0;
 }
