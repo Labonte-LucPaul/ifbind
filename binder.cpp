@@ -50,7 +50,8 @@ void Binder::start() {
     assert(!iface2Handler.joinable());
     run = true;
     iface1Handler = std::thread(&Binder::snifferThread, this, iface1_, iface2_);
-    iface2Handler = std::thread(&Binder::snifferThread, this, iface2_, iface1_);
+    if(iface1_ != iface2_)
+        iface2Handler = std::thread(&Binder::snifferThread, this, iface2_, iface1_);
 }
 
 void Binder::stop() {

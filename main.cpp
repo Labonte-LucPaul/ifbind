@@ -80,9 +80,11 @@ void checkUniqueInterfaces(const Interfaces &interfaces) {
         auto res = unique.insert(i.first);
         if (!res.second)
             throw std::runtime_error("Can only use an interface once: " + i.first);
-        res = unique.insert(i.second);
-        if (!res.second)
-            throw std::runtime_error("Can only use an interface once: " + i.second);
+        if(i.first != i.second) {
+            res = unique.insert(i.second);
+            if (!res.second)
+                throw std::runtime_error("Can only use an interface once: " + i.second);
+        }
     }
 }
 
