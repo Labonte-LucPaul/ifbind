@@ -34,10 +34,12 @@
 
 #include <spdlog/spdlog.h>
 
+#include "log.h"
+
 class Binder {
 public:
     Binder() = delete;
-    Binder(const Binder& b) : logger(spdlog::get("ifbinder")) {
+    Binder(const Binder& b) : logger(spdlog::get(LOG_NAME)) {
         iface1_ = b.iface1_;
         iface2_ = b.iface2_;
     }

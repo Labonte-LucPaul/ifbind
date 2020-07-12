@@ -37,6 +37,7 @@
 
 #include "binders.h"
 #include "cxxopts.hpp"
+#include "log.h"
 
 using namespace std::chrono_literals;
 
@@ -47,7 +48,7 @@ using Interfaces = std::vector<std::pair<std::string, std::string>>;
 Binders binders;
 
 void SignalHandler(const int signal) {
-    auto logger = spdlog::get("ifbinder");
+    auto logger = spdlog::get(LOG_NAME);
     logger->info("Caught signal ({}).", signal);
     binders.stop();
     logger->flush();
@@ -139,11 +140,11 @@ int main(int argc, char *argv[]) {
     if (interactive) {
         auto path = std::experimental::filesystem::current_path();
         path /= "ifbind.log";
-        logger = spdlog::basic_logger_mt("ifbinder", path, true);
+        logger = spdlog::basic_logger_mt(LOG_NAME, path, true);
         spdlog::flush_every(1s);
         std::cout << "logfile: " << path << std::endl;
     } else {
-        logger = std::make_shared<spdlog::logger>("ifbinder", sink);
+        logger = std::make_shared<spdlog::logger>(LOG_NAME, sink);
         spdlog::register_logger(logger);
     }
     if (results["debug"].as<bool>())

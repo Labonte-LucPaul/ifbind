@@ -37,5 +37,5 @@ set(PROJ_LIB
         stdc++fs
 )
 
-add_executable(ifbind main.cpp binder.cpp binder.h binders.cpp cxxopts.hpp)
+add_executable(ifbind main.cpp binder.cpp binder.h binders.cpp cxxopts.hpp log.h)
 target_link_libraries(ifbind PUBLIC ${PROJ_LIB})
