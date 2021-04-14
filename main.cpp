@@ -61,7 +61,7 @@ std::pair<std::string, std::string> split(const std::string &str) {
     if (std::count(str.begin(), str.end(), ':') != 1)
         throw std::runtime_error("Invalid interfaces bind, format is 'interface1:interface2': " + str);
     const auto pos = str.find(':');
-    if (pos == std::string::npos) throw std::runtime_error("Require ':' to seperate interfaces");
+    if (pos == std::string::npos) throw std::runtime_error("Require ':' to separate interfaces");
 
     return {str.substr(0, pos), str.substr(pos + 1)};
 }
