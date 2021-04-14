@@ -109,11 +109,11 @@ int main(int argc, char *argv[]) {
     std::vector<std::string> ifaces{};
 
     options.add_options()
-            ("B,bind", "Bind 2 interfaces, format: 'iface1:iface2'; repeatable argument",
+            ("b,bind", "Bind 2 interfaces, format: 'iface1:iface2'; repeatable argument",
              cxxopts::value<std::vector<std::string>>())
             ("h,help", "Print this help message and exit")
-            ("D,debug", "Set log level to DEBUG")
-            ("I,interactive", "Specify whether to use a cli to change status",
+            ("d,debug", "Set log level to DEBUG")
+            ("i,interactive", "Specify whether to use a cli to change status",
              cxxopts::value<bool>()->default_value("false"))
             ("version", "Display application version and info and exit");
 

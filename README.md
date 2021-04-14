@@ -16,19 +16,23 @@ To print the help for the arguments: `./ifbind --help`
 
 ### Simple bind
 ```bash
-sudo ./ifbind --bridge tunnel1:tunnel2 --bridge tunnel3:tunnel4
+sudo ./ifbind --bind tunnel1:tunnel2 --bind tunnel3:tunnel4
+```
+or
+```bash
+sudo ./ifbind --bind tunnel1:tunnel2,tunnel3:tunnel4
 ```
 
 ### Debug
 To activate the debug level and view each time a packets is being forwarded:
-use the `--debug` (or `-D`) argument.
+use the `--debug` (or `-d`) argument.
 
 ```bash
-sudo ./ifbind --debug --bridge tunnel1:tunnel2
+sudo ./ifbind --debug --bind tunnel1:tunnel2
 ```
 
 ### Interactive Mode
-To use the interactive mode use the argument `--interactive` (or `-I`).
+To use the interactive mode use the argument `--interactive` (or `-i`).
 
 The interactive mode allow you to connect/disconnect binded interfaces by providing a CLI.  
 Note that the logs are outputed in the fine `ifbind.log` located in `pwd`.
