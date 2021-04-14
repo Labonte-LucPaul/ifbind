@@ -225,7 +225,9 @@ int main(int argc, char *argv[]) {
     } else {
         main_run = true;
         binders.start();
-        while (main_run);
+        while (main_run) {
+          std::this_thread::sleep_for(1s);
+        }
     }
     return 0;
 }
