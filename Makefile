@@ -60,7 +60,8 @@ install:  ## Install ifbind to /usr/local/bin, require sudo
 .PHONY: clean
 clean:  ## Clean binaries generated
 	@rm -rf build
-	@rm -rf deps
+	@rm -rf deps/libtins
+	@rm -rf deps/spdlog
 
 .PHONY: help
 help:

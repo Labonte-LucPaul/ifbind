@@ -36,6 +36,11 @@
 
 #include "log.h"
 
+struct Stats {
+  std::uint64_t received{0};
+  std::uint64_t sending{0};
+};
+
 class Binder {
 public:
     Binder() = delete;
@@ -55,6 +60,11 @@ public:
         return iface1_ + " <=> " + iface2_ + " " + status;
     }
 
+    inline const std::map<std::string, Stats>& interfacesStats() const {
+      std::scoped_lock<std::mutex> lock(pktMutex);
+      return stats;
+    }
+
 private:
     void snifferThread(const std::string& listenerIface, const std::string& senderIface);
 
@@ -70,7 +80,7 @@ private:
     Tins::PDU::serialization_type lastPkt{};
 
     std::vector<std::shared_ptr<Tins::Sniffer>> sniffers{};
-
+    std::map<std::string, Stats> stats;
 };
 
 

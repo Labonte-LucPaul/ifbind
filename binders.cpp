@@ -49,3 +49,14 @@ void Binders::start(std::size_t idx) {
 void Binders::stop(std::size_t idx) {
     binders_.at(idx).stop();
 }
+
+std::vector<std::vector<std::string>> Binders::stats() const {
+  std::vector<std::vector<std::string>> stats_report;
+  for(const auto& binder : binders_) {
+    for(const auto&[iface, sta] : binder.interfacesStats()) {
+         stats_report.push_back(
+          {iface, std::to_string(sta.sending), std::to_string(sta.received)});
+    }
+  }
+  return stats_report;
+}

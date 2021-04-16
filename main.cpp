@@ -38,20 +38,30 @@
 #include "binders.h"
 #include "cxxopts.hpp"
 #include "log.h"
+#include "reportstatstable.h"
 
 using namespace std::chrono_literals;
 
-constexpr auto VERSION = "1.1.0";
+constexpr auto VERSION = "2.1.0";
 
 using Interfaces = std::vector<std::pair<std::string, std::string>>;
 
 Binders binders;
+ReportStatsTable table;
 static bool main_run = false;
+static bool print_Stats_on_exit = false;
+
+void printStats() {
+  table.setModell(binders.stats());
+  table.printTable();
+}
 
 void SignalHandler(const int signal) {
     auto logger = spdlog::get(LOG_NAME);
     logger->info("Caught signal ({}).", signal);
     binders.stop();
+    if(print_Stats_on_exit)
+      printStats();
     logger->flush();
     main_run = false;
     exit(signal);
@@ -94,6 +104,7 @@ void printHelp() {
     std::cout << "\tconnect idx" << "\tStart specific binding at index" << std::endl;
     std::cout << "\tdisconnect idx" << "\tStop specific binding at index" << std::endl;
     std::cout << "\tlist" << "\t\tList binding interfaces and status" << std::endl;
+    std::cout << "\tstats" << "\t\tDisplay a table of RX/TX stats per interface" << std::endl;
     std::cout << "\thelp" << "\t\tDisplay this help message" << std::endl;
     std::cout << "\texit" << "\t\tExit program" << std::endl;
 }
@@ -115,6 +126,7 @@ int main(int argc, char *argv[]) {
             ("d,debug", "Set log level to DEBUG")
             ("i,interactive", "Specify whether to use a cli to change status",
              cxxopts::value<bool>()->default_value("false"))
+            ("s,stats", "Display interfaces RX/TX stats when program exit")
             ("version", "Display application version and info and exit");
 
     auto results = options.parse(argc, argv);
@@ -125,6 +137,10 @@ int main(int argc, char *argv[]) {
     } else if (results["version"].as<bool>()) {
         printVersion();
         exit(0);
+    }
+
+    if(results.count("stats")) {
+      print_Stats_on_exit = true;
     }
 
     Interfaces interfaces{};
@@ -186,7 +202,9 @@ int main(int argc, char *argv[]) {
             } else if (input == "list") {
                 std::cout << binders.list();
             } else if (input == "stop") {
-                binders.stop();
+              binders.stop();
+            } else if (input == "stats") {
+              printStats();
             } else if (input.find("connect") != std::string::npos) {
                 auto sp = parse(input);
                 if (sp.empty() || sp.size() > 2) {
@@ -222,6 +240,8 @@ int main(int argc, char *argv[]) {
             logger->flush();
         } while (input != "exit");
         binders.stop();
+        if(print_Stats_on_exit)
+          printStats();
     } else {
         main_run = true;
         binders.start();

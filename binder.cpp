@@ -34,6 +34,8 @@
 
 Binder::Binder(std::string iface1, std::string iface2) : iface1_(std::move(iface1)), iface2_(std::move(iface2)),
                                                          logger(spdlog::get(LOG_NAME)) {
+  stats.insert({iface1_, Stats{}});
+  stats.insert({iface2_, Stats{}});
 }
 
 Binder::~Binder() {
@@ -83,6 +85,8 @@ void Binder::snifferThread(const std::string &listenerIface, const std::string &
                 lastPkt = tmp;
                 logger->debug("Sending packet {} -> {}", listenerIface, senderIface);
                 sender.send(pdu);
+                ++stats[listenerIface].received;
+                ++stats[senderIface].sending;
             } else {
                 lastPkt.clear();
             }

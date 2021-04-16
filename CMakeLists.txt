@@ -30,12 +30,15 @@ find_package(spdlog REQUIRED)
 find_package(Threads REQUIRED)
 find_package(libtins REQUIRED)
 
+include_directories(deps/smalltable/include)
+
 set(PROJ_LIB
         spdlog::spdlog
         tins
         Threads::Threads
         stdc++fs
+        "${PROJECT_SOURCE_DIR}/deps/smalltable/libsmalltable_lib.a"
 )
 
-add_executable(ifbind main.cpp binder.cpp binder.h binders.cpp cxxopts.hpp log.h)
+add_executable(ifbind main.cpp binder.cpp binder.h binders.cpp cxxopts.hpp log.h reportstatstable.cpp)
 target_link_libraries(ifbind PUBLIC ${PROJ_LIB})

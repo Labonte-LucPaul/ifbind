@@ -46,6 +46,8 @@ public:
         return lst;
     }
 
+  [[nodiscard]] std::vector<std::vector<std::string>> stats() const;
+
 private:
     std::vector<Binder> binders_{};
 };
