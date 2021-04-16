@@ -55,7 +55,7 @@ std::vector<std::vector<std::string>> Binders::stats() const {
   for(const auto& binder : binders_) {
     for(const auto&[iface, sta] : binder.interfacesStats()) {
          stats_report.push_back(
-          {iface, std::to_string(sta.sending), std::to_string(sta.received)});
+          {iface, std::to_string(sta.received), std::to_string(sta.sending)});
     }
   }
   return stats_report;
