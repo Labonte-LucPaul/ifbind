@@ -60,3 +60,8 @@ std::vector<std::vector<std::string>> Binders::stats() const {
   }
   return stats_report;
 }
+
+void Binders::clearStats() {
+  for(auto& binder : binders_)
+    binder.clearStats();
+}

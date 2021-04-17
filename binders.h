@@ -48,6 +48,8 @@ public:
 
   [[nodiscard]] std::vector<std::vector<std::string>> stats() const;
 
+  void clearStats();
+
 private:
     std::vector<Binder> binders_{};
 };

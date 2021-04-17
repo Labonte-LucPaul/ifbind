@@ -47,6 +47,8 @@ public:
     Binder(const Binder& b) : logger(spdlog::get(LOG_NAME)) {
         iface1_ = b.iface1_;
         iface2_ = b.iface2_;
+        stats[iface1_] = {};
+        stats[iface2_] = {};
     }
 
     Binder(std::string  iface1, std::string  iface2);
@@ -65,6 +67,11 @@ public:
       return stats;
     }
 
+    inline  void clearStats() {
+      std::scoped_lock<std::mutex> lock(pktMutex);
+      for(auto& [iface, stat] : stats)
+        stats[iface] = {};
+    }
 private:
     void snifferThread(const std::string& listenerIface, const std::string& senderIface);
 

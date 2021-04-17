@@ -42,7 +42,7 @@
 
 using namespace std::chrono_literals;
 
-constexpr auto VERSION = "2.1.1";
+constexpr auto VERSION = "2.2.0";
 
 using Interfaces = std::vector<std::pair<std::string, std::string>>;
 
@@ -105,6 +105,7 @@ void printHelp() {
     std::cout << "\tdisconnect idx" << "\tStop specific binding at index" << std::endl;
     std::cout << "\tlist" << "\t\tList binding interfaces and status" << std::endl;
     std::cout << "\tstats" << "\t\tDisplay a table of RX/TX stats per interface" << std::endl;
+    std::cout << "\tclear stats" << "\t\tClear all of interfaces stats" << std::endl;
     std::cout << "\thelp" << "\t\tDisplay this help message" << std::endl;
     std::cout << "\texit" << "\t\tExit program" << std::endl;
 }
@@ -205,6 +206,8 @@ int main(int argc, char *argv[]) {
               binders.stop();
             } else if (input == "stats") {
               printStats();
+            } else if(input == "clear stats") {
+              binders.clearStats();
             } else if (input.find("connect") != std::string::npos) {
                 auto sp = parse(input);
                 if (sp.empty() || sp.size() > 2) {
