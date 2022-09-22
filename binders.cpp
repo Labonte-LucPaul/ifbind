@@ -24,44 +24,32 @@
 
 #include "binder.h"
 
-Binders::~Binders() {
-    stop();
-}
+Binders::~Binders() { stop(); }
 
-void Binders::addBinder(const std::string &iface1, const std::string& iface2) {
-    binders_.emplace_back(iface1, iface2);
-}
+void Binders::addBinder(const std::string& iface1, const std::string& iface2) { binders_.emplace_back(iface1, iface2); }
 
 void Binders::start() {
-    for(auto& b : binders_)
-        b.start();
+  for (auto& b : binders_) b.start();
 }
 
 void Binders::stop() {
-    for(auto& b : binders_)
-        b.stop();
+  for (auto& b : binders_) b.stop();
 }
 
-void Binders::start(std::size_t idx) {
-    binders_.at(idx).start();
-}
+void Binders::start(std::size_t idx) { binders_.at(idx).start(); }
 
-void Binders::stop(std::size_t idx) {
-    binders_.at(idx).stop();
-}
+void Binders::stop(std::size_t idx) { binders_.at(idx).stop(); }
 
 std::vector<std::vector<std::string>> Binders::stats() const {
   std::vector<std::vector<std::string>> stats_report;
-  for(const auto& binder : binders_) {
-    for(const auto&[iface, sta] : binder.interfacesStats()) {
-         stats_report.push_back(
-          {iface, std::to_string(sta.received), std::to_string(sta.sending)});
+  for (const auto& binder : binders_) {
+    for (const auto& [iface, sta] : binder.interfacesStats()) {
+      stats_report.push_back({iface, std::to_string(sta.received), std::to_string(sta.sending)});
     }
   }
   return stats_report;
 }
 
 void Binders::clearStats() {
-  for(auto& binder : binders_)
-    binder.clearStats();
+  for (auto& binder : binders_) binder.clearStats();
 }

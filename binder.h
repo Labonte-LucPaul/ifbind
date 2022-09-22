@@ -27,8 +27,8 @@
 #include <string>
 #include <thread>
 
-#include <tins/pdu.h>
 #include <tins/packet_sender.h>
+#include <tins/pdu.h>
 #include <tins/sniffer.h>
 #include <tins/tins.h>
 
@@ -42,53 +42,52 @@ struct Stats {
 };
 
 class Binder {
-public:
-    Binder() = delete;
-    Binder(const Binder& b) : logger(spdlog::get(LOG_NAME)) {
-        iface1_ = b.iface1_;
-        iface2_ = b.iface2_;
-        stats[iface1_] = {};
-        stats[iface2_] = {};
-    }
+ public:
+  Binder() = delete;
+  Binder(const Binder& b) : logger(spdlog::get(LOG_NAME)) {
+    iface1_ = b.iface1_;
+    iface2_ = b.iface2_;
+    stats[iface1_] = {};
+    stats[iface2_] = {};
+  }
 
-    Binder(std::string  iface1, std::string  iface2);
-    ~Binder();
+  Binder(std::string iface1, std::string iface2);
+  ~Binder();
 
-    void start();
-    void stop();
+  void start();
+  void stop();
 
-    inline std::string binder() const {
-        std::string status = run ? "connected" : "disconnected";
-        return iface1_ + " <=> " + iface2_ + " " + status;
-    }
+  inline std::string binder() const {
+    std::string status = run ? "connected" : "disconnected";
+    return iface1_ + " <=> " + iface2_ + " " + status;
+  }
 
-    inline const std::map<std::string, Stats>& interfacesStats() const {
-      std::scoped_lock<std::mutex> lock(pktMutex);
-      return stats;
-    }
+  inline const std::map<std::string, Stats>& interfacesStats() const {
+    std::scoped_lock<std::mutex> lock(pktMutex);
+    return stats;
+  }
 
-    inline  void clearStats() {
-      std::scoped_lock<std::mutex> lock(pktMutex);
-      for(auto& [iface, stat] : stats)
-        stats[iface] = {};
-    }
-private:
-    void snifferThread(const std::string& listenerIface, const std::string& senderIface);
+  inline void clearStats() {
+    std::scoped_lock<std::mutex> lock(pktMutex);
+    for (auto& [iface, stat] : stats) stats[iface] = {};
+  }
 
-    std::string iface1_{};
-    std::string iface2_{};
-    std::shared_ptr<spdlog::logger> logger = nullptr;
+ private:
+  void snifferThread(const std::string& listenerIface, const std::string& senderIface);
 
-    std::atomic<bool> run{false};
-    std::thread iface1Handler;
+  std::string iface1_{};
+  std::string iface2_{};
+  std::shared_ptr<spdlog::logger> logger = nullptr;
 
-    std::thread iface2Handler;
-    mutable std::mutex pktMutex;
-    Tins::PDU::serialization_type lastPkt{};
+  std::atomic<bool> run{false};
+  std::thread iface1Handler;
 
-    std::vector<std::shared_ptr<Tins::Sniffer>> sniffers{};
-    std::map<std::string, Stats> stats;
+  std::thread iface2Handler;
+  mutable std::mutex pktMutex;
+  Tins::PDU::serialization_type lastPkt{};
+
+  std::vector<std::shared_ptr<Tins::Sniffer>> sniffers{};
+  std::map<std::string, Stats> stats;
 };
 
-
-#endif //IFBIND_BINDER_H
+#endif  // IFBIND_BINDER_H

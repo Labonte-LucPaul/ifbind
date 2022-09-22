@@ -27,32 +27,30 @@
 #include "binder.h"
 
 class Binders {
-public:
-    Binders() = default;
-    ~Binders();
+ public:
+  Binders() = default;
+  ~Binders();
 
-    void addBinder(const std::string& iface1, const std::string& iface2);
+  void addBinder(const std::string& iface1, const std::string& iface2);
 
-    void start();
-    void stop();
-    void start(std::size_t idx);
-    void stop(std::size_t idx);
+  void start();
+  void stop();
+  void start(std::size_t idx);
+  void stop(std::size_t idx);
 
-    [[nodiscard]] inline std::string list() const {
-        std::string lst;
-        int i = 0;
-        for(const auto& b : binders_)
-            lst += std::to_string(++i) + ": " + b.binder() + "\n";
-        return lst;
-    }
+  [[nodiscard]] inline std::string list() const {
+    std::string lst;
+    int i = 0;
+    for (const auto& b : binders_) lst += std::to_string(++i) + ": " + b.binder() + "\n";
+    return lst;
+  }
 
   [[nodiscard]] std::vector<std::vector<std::string>> stats() const;
 
   void clearStats();
 
-private:
-    std::vector<Binder> binders_{};
+ private:
+  std::vector<Binder> binders_{};
 };
 
-
-#endif //IFBIND_BINDERS_H
+#endif  // IFBIND_BINDERS_H
