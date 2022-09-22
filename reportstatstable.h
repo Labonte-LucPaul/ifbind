@@ -6,15 +6,20 @@
 #define IFBIND_REPORTSTATSTABLE_H
 
 #include "tablemodel.h"
+#include <memory>
+#include <spdlog/spdlog.h>
+
+#include "log.h"
 
 class ReportStatsTable {
 public:
   ReportStatsTable();
 
-  void setModell(const smalltable::DataModel_t &dataModel);
+  void setModel(const smalltable::DataModel_t &dataModel);
   void printTable() const;
 
 private:
+  std::shared_ptr<spdlog::logger> logger = nullptr;
   smalltable::TableModel model;
 };
 

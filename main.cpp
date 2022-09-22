@@ -39,21 +39,22 @@
 #include "cxxopts.hpp"
 #include "log.h"
 #include "reportstatstable.h"
+#include "borderlesstableview.h"
 
 using namespace std::chrono_literals;
 
-constexpr auto VERSION = "2.2.0";
+constexpr auto VERSION = "2.3.0";
 
 using Interfaces = std::vector<std::pair<std::string, std::string>>;
 
 Binders binders;
-ReportStatsTable table;
+std::shared_ptr<ReportStatsTable> table;
 static bool main_run = false;
 static bool print_Stats_on_exit = false;
 
 void printStats() {
-  table.setModell(binders.stats());
-  table.printTable();
+  table->setModel(binders.stats());
+  table->printTable();
 }
 
 void SignalHandler(const int signal) {
@@ -99,15 +100,21 @@ void checkUniqueInterfaces(const Interfaces &interfaces) {
 }
 
 void printHelp() {
-    std::cout << "\tstart" << "\t\tStart all binding interfaces" << std::endl;
-    std::cout << "\tstop" << "\t\tStop all binding interfaces" << std::endl;
-    std::cout << "\tconnect idx" << "\tStart specific binding at index" << std::endl;
-    std::cout << "\tdisconnect idx" << "\tStop specific binding at index" << std::endl;
-    std::cout << "\tlist" << "\t\tList binding interfaces and status" << std::endl;
-    std::cout << "\tstats" << "\t\tDisplay a table of RX/TX stats per interface" << std::endl;
-    std::cout << "\tclear stats" << "\t\tClear all of interfaces stats" << std::endl;
-    std::cout << "\thelp" << "\t\tDisplay this help message" << std::endl;
-    std::cout << "\texit" << "\t\tExit program" << std::endl;
+  smalltable::TableModel help;
+  help.setDataModel({
+    {"\tstart", "", "Start all binding interfaces"},
+    {"\tstop", "", "Stop all binding interfaces"},
+    {"\tconnect", "index", "Start specific binding at index"},
+    {"\tdisconnect", "index", "Stop specific binding at index"},
+    {"\tlist", "", "List binding interfaces and status"},
+    {"\tstats", "", "Display a table of RX/TX stats per interface"},
+    {"\tclear stats", "", "Clear all of interfaces stats"},
+    {"\thelp", "", "Display this help message"},
+    {"\texit", "", "Exit program"}
+  });
+  smalltable::BorderlessTableView view{help};
+  std::cout.setf(std::ios::left, std::ios::adjustfield);
+  std::cout << view.getTable() << std::endl;
 }
 
 void printVersion() {
@@ -174,6 +181,8 @@ int main(int argc, char *argv[]) {
     logger->info("Interactive mode: {}", interactive);
     logger->info("Init...");
 
+    table = std::make_shared<ReportStatsTable>();
+
     signal(SIGINT, SignalHandler);
     signal(SIGTERM, SignalHandler);
 
@@ -205,7 +214,11 @@ int main(int argc, char *argv[]) {
             } else if (input == "stop") {
               binders.stop();
             } else if (input == "stats") {
-              printStats();
+              try {
+                printStats();
+              } catch(const std::range_error& ex) {
+                std::cout << ex.what() << std::endl;
+              }
             } else if(input == "clear stats") {
               binders.clearStats();
             } else if (input.find("connect") != std::string::npos) {
