@@ -38,11 +38,12 @@
 #include "binders.h"
 #include "borderlesstableview.h"
 #include "cxxopts.hpp"
+#include "deps/json.hpp"
 #include "deps/rest/curl/client.h"
 #include "log.h"
 #include "reportstatstable.h"
+#include "filereader.h"
 #include "version.h"
-#include "deps/json.hpp"
 
 using namespace std::chrono_literals;
 
@@ -131,10 +132,22 @@ LatestReleaseInformations getLatestVersion() {
   try {
     const auto json = nlohmann::json::parse(body);
     return {Version{json["tag_name"]}, json["html_url"]};
-  } catch(const nlohmann::json_abi_v3_11_2::detail::parse_error& ex) {
+  } catch (const nlohmann::json_abi_v3_11_2::detail::parse_error &ex) {
     std::cout << ex.what();
     exit(1);
   }
+}
+
+std::vector<std::string> parseCommaSeparatedValue(const std::string& csv) {
+  std::vector<std::string> parsed_csv;
+  std::string unparsed_csv = csv;
+  while(!unparsed_csv.empty()) {
+    int delimiter_position = unparsed_csv.find(",");
+    parsed_csv.push_back(unparsed_csv.substr(0, unparsed_csv.find(",")));
+    unparsed_csv = unparsed_csv.substr(delimiter_position+1);
+    if(delimiter_position == std::string::npos) break;
+  }
+  return parsed_csv;
 }
 
 int main(int argc, char *argv[]) {
@@ -147,16 +160,17 @@ int main(int argc, char *argv[]) {
                         cxxopts::value<std::vector<std::string>>())("h,help", "Print this help message and exit")(
       "d,debug", "Set log level to DEBUG")("i,interactive", "Specify whether to use a cli to change status",
                                            cxxopts::value<bool>()->default_value("false"))(
-      "s,stats", "Display interfaces RX/TX stats when program exit")("version",
-                                                                     "Display application version and info and exit");
+      "f,file", "Load a text file containing interfaces to loop back, same format as --bind argument",
+      cxxopts::value<std::string>())("s,stats", "Display interfaces RX/TX stats when program exit")(
+      "version", "Display application version and info and exit");
 
   auto results = options.parse(argc, argv);
 
   const auto latestVersion = getLatestVersion();
   Version currentVersion{VERSION};
-  if(latestVersion.version > currentVersion)
+  if (latestVersion.version > currentVersion)
     std::cout << "A new version is available " << latestVersion.version << std::endl
-        << "Download latest at " << latestVersion.uri << std::endl;
+              << "Download latest at " << latestVersion.uri << std::endl;
   else
     std::cout << "You have the latest version " << currentVersion << std::endl;
 
@@ -173,9 +187,15 @@ int main(int argc, char *argv[]) {
   }
 
   Interfaces interfaces{};
+  if(results.count("file")) {
+    const auto parsed_values = parseCommaSeparatedValue(FileReader::readFile(results["file"].as<std::string>()));
+    interfaces = getInterfaces(parsed_values);
+    checkUniqueInterfaces(interfaces);
+  }
   if (results.count("bind")) {
     const auto binds = results["bind"].as<std::vector<std::string>>();
-    interfaces = getInterfaces(binds);
+    const auto argument_interfaces = getInterfaces(binds);
+    interfaces.insert(interfaces.end(), argument_interfaces.begin(), argument_interfaces.end());
     checkUniqueInterfaces(interfaces);
   } else {
     std::cout << options.help() << std::endl;
