@@ -38,8 +38,11 @@
 #include "binders.h"
 #include "borderlesstableview.h"
 #include "cxxopts.hpp"
+#include "deps/rest/curl/client.h"
 #include "log.h"
 #include "reportstatstable.h"
+#include "version.h"
+#include "deps/json.hpp"
 
 using namespace std::chrono_literals;
 
@@ -114,6 +117,26 @@ void printHelp() {
 
 void printVersion() { std::cout << "ifbind - version " << VERSION << std::endl; }
 
+struct LatestReleaseInformations {
+  Version version;
+  std::string uri;
+};
+
+LatestReleaseInformations getLatestVersion() {
+  stockit::rest::Header headers{};
+  headers.append("User-Agent: ifbind");
+  stockit::rest::curl::Client client{};
+  std::string body =
+      client.sendGetRequest(headers, "https://api.github.com/repos/Labonte-LucPaul/ifbind/releases/latest");
+  try {
+    const auto json = nlohmann::json::parse(body);
+    return {Version{json["tag_name"]}, json["html_url"]};
+  } catch(const nlohmann::json_abi_v3_11_2::detail::parse_error& ex) {
+    std::cout << ex.what();
+    exit(1);
+  }
+}
+
 int main(int argc, char *argv[]) {
   cxxopts::Options options(argv[0], "ifbind - bind interfaces as a loop back\nMight require sudo access");
   options.positional_help("[args]").show_positional_help();
@@ -128,6 +151,14 @@ int main(int argc, char *argv[]) {
                                                                      "Display application version and info and exit");
 
   auto results = options.parse(argc, argv);
+
+  const auto latestVersion = getLatestVersion();
+  Version currentVersion{VERSION};
+  if(latestVersion.version > currentVersion)
+    std::cout << "A new version is available " << latestVersion.version << std::endl
+        << "Download latest at " << latestVersion.uri << std::endl;
+  else
+    std::cout << "You have the latest version " << currentVersion << std::endl;
 
   if (results.count("help")) {
     std::cout << options.help() << std::endl;
