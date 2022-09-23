@@ -39,7 +39,7 @@ set(PROJ_LIB
         stdc++fs
         curl
         "${PROJECT_SOURCE_DIR}/deps/smalltable/libsmalltable_lib.a"
-)
+        )
 
-add_executable(ifbind main.cpp binder.cpp binder.h binders.cpp cxxopts.hpp log.h reportstatstable.cpp deps/rest/client_base.cpp deps/rest/curl/client.cpp version.cpp)
+add_executable(ifbind main.cpp binder.cpp binder.h binders.cpp cxxopts.hpp log.h reportstatstable.cpp deps/rest/client_base.cpp deps/rest/curl/client.cpp filereader.cpp version.cpp)
 target_link_libraries(ifbind PUBLIC ${PROJ_LIB})
