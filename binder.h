@@ -84,7 +84,6 @@ class Binder {
 
   std::thread iface2Handler;
   mutable std::mutex pktMutex;
-  Tins::PDU::serialization_type lastPkt{};
 
   std::vector<std::shared_ptr<Tins::Sniffer>> sniffers{};
   std::map<std::string, Stats> stats;
