@@ -65,27 +65,23 @@ void Binder::stop() {
 
 void Binder::snifferThread(const std::string &listenerIface, const std::string &senderIface) {
   logger->info("Starting bind thread {} -> {}", listenerIface, senderIface);
-  Tins::SnifferConfiguration cfg;
-  cfg.set_immediate_mode(true);
-  std::scoped_lock<std::mutex> vec(pktMutex);
-  auto sniffer = sniffers.emplace_back(std::make_shared<Tins::Sniffer>(listenerIface, cfg));
-  pktMutex.unlock();
+  Tins::SnifferConfiguration configuration;
+  configuration.set_immediate_mode(true);
+  configuration.set_promisc_mode(true);
+  configuration.set_direction(pcap_direction_t::PCAP_D_IN);
+  auto sniffer = std::make_shared<Tins::Sniffer>(listenerIface, configuration);
+  {
+    std::scoped_lock<std::mutex> sniffer_mutex(pktMutex);
+    sniffers.push_back(sniffer);
+  }
   Tins::PacketSender sender((Tins::NetworkInterface(senderIface)));
   sniffer->sniff_loop([this, &sender, &listenerIface, &senderIface](Tins::PDU &pdu) {
-    const auto tmp = pdu.serialize();
-    {
-      std::scoped_lock<std::mutex> lock(pktMutex);
-      if (lastPkt != tmp) {
-        lastPkt = tmp;
-        logger->debug("Sending packet {} -> {}", listenerIface, senderIface);
-        sender.send(pdu);
-        ++stats[listenerIface].received;
-        ++stats[senderIface].sending;
-      } else {
-        lastPkt.clear();
-      }
-      return run.load();
-    }
+    std::scoped_lock<std::mutex> lock(pktMutex);
+    logger->debug("Sending packet {} -> {}", listenerIface, senderIface);
+    sender.send(pdu);
+    ++stats[listenerIface].received;
+    ++stats[senderIface].sending;
+    return run.load();
   });
   sniffer->stop_sniff();
   logger->info("Stopping bind {} -> {}", listenerIface, senderIface);

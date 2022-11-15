@@ -47,7 +47,7 @@
 
 using namespace std::chrono_literals;
 
-constexpr auto VERSION = "2.3.0";
+constexpr auto VERSION = "2.3.1";
 
 using Interfaces = std::vector<std::pair<std::string, std::string>>;
 
