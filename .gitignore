@@ -12,3 +12,4 @@ cmake-build*
 bin/
 .idea/
 *.log
+docker-build/
