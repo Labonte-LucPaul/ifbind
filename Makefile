@@ -63,6 +63,13 @@ clean:  ## Clean binaries generated
 	@rm -rf deps/libtins
 	@rm -rf deps/spdlog
 
+.PHONY: release  ## Build a release binary
+release: .docker-image-builder
+		./build.sh
+
+.docker-image-builder:
+	@docker build --rm --progress auto . -t ifbind:builder
+
 .PHONY: help
 help:
 	@grep -E '^[a-zA-Z0-9_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sed 's/Makefile://' | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'

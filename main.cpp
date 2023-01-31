@@ -33,13 +33,15 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
+//#include "deps/httplib.h"
+
 // setcap cap_net_raw,cap_net_admin=eip xxxx
 
 #include "binders.h"
 #include "borderlesstableview.h"
 #include "cxxopts.hpp"
-#include "deps/json.hpp"
-#include "deps/rest/curl/client.h"
+//#include "deps/json.hpp"
+//#include "deps/rest/curl/client.h"
 #include "log.h"
 #include "reportstatstable.h"
 #include "filereader.h"
@@ -124,18 +126,24 @@ struct LatestReleaseInformations {
 };
 
 LatestReleaseInformations getLatestVersion() {
-  stockit::rest::Header headers{};
-  headers.append("User-Agent: ifbind");
-  stockit::rest::curl::Client client{};
-  std::string body =
-      client.sendGetRequest(headers, "https://api.github.com/repos/Labonte-LucPaul/ifbind/releases/latest");
-  try {
-    const auto json = nlohmann::json::parse(body);
-    return {Version{json["tag_name"]}, json["html_url"]};
-  } catch (const nlohmann::json_abi_v3_11_2::detail::parse_error &ex) {
-    std::cout << ex.what();
-    exit(1);
-  }
+//  httplib::Client client{"https://api.github.com"};
+//  httplib::Headers headers{
+//      {"User-Agent", "ifbind"}
+//  };
+//    httplib::Result response = client.Get("repos/Labonte-LucPaul/ifbind/releases/latest", headers);
+//  stockit::rest::Header headers{};
+//  headers.append("User-Agent: ifbind");
+//  stockit::rest::curl::Client client{};
+//  std::string body =
+//      client.sendGetRequest(headers, "https://api.github.com/repos/Labonte-LucPaul/ifbind/releases/latest");
+//  try {
+//    const auto json = nlohmann::json::parse(body);
+//    return {Version{json["tag_name"]}, json["html_url"]};
+//  } catch (const nlohmann::json_abi_v3_11_2::detail::parse_error &ex) {
+//    std::cout << ex.what();
+//    exit(1);
+//  }
+    return LatestReleaseInformations{.version= Version("0.0.0")};
 }
 
 std::vector<std::string> parseCommaSeparatedValue(const std::string& csv) {
@@ -164,7 +172,7 @@ int main(int argc, char *argv[]) {
       cxxopts::value<std::string>())("s,stats", "Display interfaces RX/TX stats when program exit")(
       "version", "Display application version and info and exit");
 
-  auto results = options.parse(argc, argv);
+  auto application_arguments = options.parse(argc, argv);
 
   const auto latestVersion = getLatestVersion();
   Version currentVersion{VERSION};
@@ -174,26 +182,26 @@ int main(int argc, char *argv[]) {
   else
     std::cout << "You have the latest version " << currentVersion << std::endl;
 
-  if (results.count("help")) {
+  if (application_arguments.count("help")) {
     std::cout << options.help() << std::endl;
     exit(0);
-  } else if (results["version"].as<bool>()) {
+  } else if (application_arguments["version"].as<bool>()) {
     printVersion();
     exit(0);
   }
 
-  if (results.count("stats")) {
+  if (application_arguments.count("stats")) {
     print_Stats_on_exit = true;
   }
 
   Interfaces interfaces{};
-  if(results.count("file")) {
-    const auto parsed_values = parseCommaSeparatedValue(FileReader::readFile(results["file"].as<std::string>()));
+  if(application_arguments.count("file")) {
+    const auto parsed_values = parseCommaSeparatedValue(FileReader::readFile(application_arguments["file"].as<std::string>()));
     interfaces = getInterfaces(parsed_values);
     checkUniqueInterfaces(interfaces);
   }
-  if (results.count("bind")) {
-    const auto binds = results["bind"].as<std::vector<std::string>>();
+  if (application_arguments.count("bind")) {
+    const auto binds = application_arguments["bind"].as<std::vector<std::string>>();
     const auto argument_interfaces = getInterfaces(binds);
     interfaces.insert(interfaces.end(), argument_interfaces.begin(), argument_interfaces.end());
     checkUniqueInterfaces(interfaces);
@@ -202,7 +210,7 @@ int main(int argc, char *argv[]) {
     exit(0);
   }
 
-  bool interactive = results["interactive"].as<bool>();
+  bool interactive = application_arguments["interactive"].as<bool>();
 
   std::shared_ptr<spdlog::logger> logger = nullptr;
   auto sink = std::make_shared<spdlog::sinks::stderr_color_sink_mt>();
@@ -216,7 +224,7 @@ int main(int argc, char *argv[]) {
     logger = std::make_shared<spdlog::logger>(LOG_NAME, sink);
     spdlog::register_logger(logger);
   }
-  if (results["debug"].as<bool>()) logger->set_level(spdlog::level::debug);
+  if (application_arguments["debug"].as<bool>()) logger->set_level(spdlog::level::debug);
 
   logger->info("Interactive mode: {}", interactive);
   logger->info("Init...");
