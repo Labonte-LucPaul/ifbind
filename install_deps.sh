@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -e
 
 mkdir -p deps
 cd deps && git clone https://github.com/mfontanini/libtins.git
