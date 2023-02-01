@@ -1,0 +1,24 @@
+language: cpp
+
+sudo: false
+
+compiler:
+  - gcc
+  - clang
+
+os:
+  - linux
+  - osx
+
+#addons:
+#  apt:
+#    packages:
+#      - libpcap-dev
+#      - libssl-dev
+#      - libboost-all-dev
+
+before_script:
+  - install_deps.sh
+
+script:
+  - ctest -V
