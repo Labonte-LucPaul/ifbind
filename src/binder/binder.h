@@ -34,7 +34,7 @@
 
 #include <spdlog/spdlog.h>
 
-#include "log.h"
+#include "../log.h"
 
 struct Stats {
   std::uint64_t received{0};

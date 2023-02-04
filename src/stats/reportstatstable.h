@@ -9,7 +9,7 @@
 #include <memory>
 #include "tablemodel.h"
 
-#include "log.h"
+#include "../log.h"
 
 class ReportStatsTable {
  public:

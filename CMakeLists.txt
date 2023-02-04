@@ -32,6 +32,17 @@ find_package(libtins REQUIRED)
 
 include_directories(deps/smalltable/include)
 
+set(PROJ_SRC
+        src/main.cpp
+        src/binder/binder.cpp
+        src/binder/binders.cpp
+        src/cxxopts.hpp
+        src/log.h
+        src/stats/reportstatstable.cpp
+        src/filereader/filereader.cpp
+        src/utilities/version.cpp
+)
+
 set(PROJ_LIB
         spdlog::spdlog
         tins
@@ -39,7 +50,7 @@ set(PROJ_LIB
         stdc++fs
         "${PROJECT_SOURCE_DIR}/deps/smalltable/libsmalltable_lib.a"
         )
-add_executable(ifbind main.cpp binder.cpp binder.h binders.cpp cxxopts.hpp log.h reportstatstable.cpp
-        filereader.cpp version.cpp
+add_executable(ifbind ${PROJ_SRC}
         ${SRC_LIST})
+
 target_link_libraries(ifbind PUBLIC ${PROJ_LIB})

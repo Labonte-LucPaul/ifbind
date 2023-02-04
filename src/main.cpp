@@ -33,19 +33,18 @@
 #include <spdlog/sinks/stdout_color_sinks.h>
 #include <spdlog/spdlog.h>
 
-//#include "deps/httplib.h"
 
 // setcap cap_net_raw,cap_net_admin=eip xxxx
 
-#include "binders.h"
+#include "binder/binders.h"
 #include "borderlesstableview.h"
 #include "cxxopts.hpp"
-//#include "deps/json.hpp"
-//#include "deps/rest/curl/client.h"
 #include "log.h"
-#include "reportstatstable.h"
-#include "filereader.h"
-#include "version.h"
+#include "stats/reportstatstable.h"
+#include "filereader/filereader.h"
+#include "utilities/version.h"
+
+
 
 using namespace std::chrono_literals;
 

@@ -11,3 +11,4 @@ cd ../../
 git clone --single-branch --branch v1.x https://github.com/gabime/spdlog.git
 mkdir -p spdlog/build
 cd spdlog/build && cmake .. && make -j
+cd ../..

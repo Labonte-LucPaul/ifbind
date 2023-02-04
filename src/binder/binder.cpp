@@ -30,7 +30,7 @@
 #include <thread>
 #include <utility>
 
-#include "log.h"
+#include "../log.h"
 
 Binder::Binder(std::string iface1, std::string iface2)
     : iface1_(std::move(iface1)), iface2_(std::move(iface2)), logger(spdlog::get(LOG_NAME)) {
